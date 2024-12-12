@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
@@ -20,4 +21,6 @@ public class ExpenseDTO implements Serializable {
     private String category;
     private Date date;
     private BigDecimal amount;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 }
