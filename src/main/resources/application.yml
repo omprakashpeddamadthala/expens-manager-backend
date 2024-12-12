@@ -2,7 +2,6 @@
 spring:
   application:
     name: ExpensManager-backend
-
   h2:
     console:
       enabled: true
