@@ -19,3 +19,7 @@ spring:
     init:
       mode: always
       data-locations: classpath:data.sql
+server:
+  servlet:
+    context-path: /api/v1
+  port: 9090
