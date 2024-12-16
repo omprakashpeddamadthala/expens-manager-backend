@@ -3,6 +3,7 @@ package com.expens.manager.service.impl;
 
 import com.expens.manager.dto.ExpenseDTO;
 import com.expens.manager.entity.ExpenseEntity;
+import com.expens.manager.expection.ResourceNotFoundException;
 import com.expens.manager.repository.ExpenseRepository;
 import com.expens.manager.service.ExpenseService;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,18 @@ public class ExpenseServiceImpl implements ExpenseService {
         log.info( "printing data from database expenseEntityList {}",expenseEntityList );
         List<ExpenseDTO> expenseDTOListList =expenseEntityList.stream().map(expenseEntity -> mapToExpenseDTO(expenseEntity)).collect( Collectors.toList());
         return expenseDTOListList;
+    }
+
+    /**
+     * It will fetch single expense details  from database
+     * @param expenseId
+     * @return expenseDTO
+     * */
+    @Override
+    public ExpenseDTO getExpenseByExpenseId(String expenseId) {
+        ExpenseEntity expenseEntity = expenseRepository.findByExpenseId( expenseId ).orElseThrow( () -> new ResourceNotFoundException( "Expense details not found for expense id "+expenseId ) );
+        log.info( "printing data from database expenseEntity {}",expenseEntity );
+        return mapToExpenseDTO( expenseEntity);
     }
 
     /**
