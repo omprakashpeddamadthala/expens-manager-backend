@@ -6,10 +6,7 @@ import com.expens.manager.service.ExpenseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,6 +51,16 @@ public class ExpenseController {
         log.info( "API Get /expenses/" + expenseId + " called successfully" );
         ExpenseDTO expenseDTO = expenseService.getExpenseByExpenseId( expenseId );
         return mapToExpenseResponse( expenseDTO);
+    }
+
+    /**
+     * It will delete expense details by expenseId from database
+     * @param expenseId
+     * */
+    @DeleteMapping("/expenses/{expenseId}")
+    public void deleteExpenseByExpenseId(@PathVariable String expenseId){
+        log.info( "API Delete /expenses/" + expenseId + " called successfully" );
+        expenseService.deleteExpenseByExpenseId( expenseId );
     }
 
     /**
