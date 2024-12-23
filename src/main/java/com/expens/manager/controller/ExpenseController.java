@@ -1,15 +1,14 @@
 package com.expens.manager.controller;
 
 import com.expens.manager.dto.ExpenseDTO;
+import com.expens.manager.io.ExpenseRequest;
 import com.expens.manager.io.ExpenseResponse;
 import com.expens.manager.service.ExpenseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,6 +44,20 @@ public class ExpenseController {
     }
 
     /**
+     * It will save expense details to database
+     * @param expenseRequest
+     * @return expense details
+     * */
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/expenses")
+    public ExpenseResponse saveExpenseDetails(@RequestBody ExpenseRequest expenseRequest) {
+        log.info("API Post /expenses called successfully {} ",expenseRequest);
+        ExpenseDTO expenseDTO =expenseService.saveExpenseDetails(mapToExpenseDto(expenseRequest) );
+        log.info( "Printing data  expenseDTO : {}", expenseDTO );
+        return  mapToExpenseResponse( expenseDTO );
+    }
+
+    /**
      * It will fetch expense details by expenseId from database
      * @param expenseId
      * @return expense details
@@ -57,11 +70,31 @@ public class ExpenseController {
     }
 
     /**
+     * It will delete expense details by expenseId from database
+     * @param expenseId
+     * */
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/expenses/{expenseId}")
+    public void deleteExpenseByExpenseId(@PathVariable String expenseId){
+        log.info( "API Delete /expenses/" + expenseId + " called successfully" );
+        expenseService.deleteExpenseByExpenseId( expenseId );
+    }
+
+    /**
      * Mapper method for converting from dto object to response object
      * @param expenseDTO
      * @return ExpenseResponse
      * */
     private ExpenseResponse mapToExpenseResponse(ExpenseDTO expenseDTO) {
-       return modelMapper.map( expenseDTO, ExpenseResponse.class);
+        return modelMapper.map( expenseDTO, ExpenseResponse.class);
+    }
+
+    /**
+     * Mapper method for converting from expense request  object to dto object
+     * @param expenseRequest
+     * @return ExpenseDTO
+     * */
+    private ExpenseDTO mapToExpenseDto(ExpenseRequest expenseRequest) {
+        return modelMapper.map( expenseRequest, ExpenseDTO.class);
     }
 }

@@ -9,9 +9,11 @@ import com.expens.manager.service.ExpenseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -42,15 +44,47 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     /**
+     * It will save expense details to database
+     * @return list of expense
+     * */
+    public ExpenseDTO saveExpenseDetails(ExpenseDTO expenseDTO){
+        ExpenseEntity newExpenseEntity = this.mapToExpenseEntity( expenseDTO );
+        newExpenseEntity.setExpenseId( UUID.randomUUID().toString() );
+        newExpenseEntity=expenseRepository.save( newExpenseEntity );
+        log.info( "expense details saved successfully for expenseId {}",newExpenseEntity.getExpenseId() );
+        return mapToExpenseDTO( newExpenseEntity );
+    }
+
+    /**
      * It will fetch single expense details  from database
      * @param expenseId
      * @return expenseDTO
      * */
     @Override
     public ExpenseDTO getExpenseByExpenseId(String expenseId) {
-        ExpenseEntity expenseEntity = expenseRepository.findByExpenseId( expenseId ).orElseThrow( () -> new ResourceNotFoundException( "Expense details not found for expense id "+expenseId ) );
+        ExpenseEntity expenseEntity = this.getExpenseEntity( expenseId );
         log.info( "printing data from database expenseEntity {}",expenseEntity );
         return mapToExpenseDTO( expenseEntity);
+    }
+
+    /**
+     * It will delete expense details from database by expenseId
+     * @param expenseId
+     * */
+    @Override
+    public void deleteExpenseByExpenseId(String expenseId) {
+        ExpenseEntity expenseEntity = this.getExpenseEntity( expenseId );
+        expenseRepository.delete( expenseEntity );
+        log.info( "expense details deleted successfully for expenseId {}",expenseId );
+    }
+
+    /**
+     * Mapper method for converting from dto object to entity object
+     * @param expenseDTO
+     * @return expenseEntity
+     * */
+    private ExpenseEntity mapToExpenseEntity(ExpenseDTO expenseDTO) {
+       return modelMapper.map(expenseDTO,ExpenseEntity.class );
     }
 
     /**
@@ -60,5 +94,16 @@ public class ExpenseServiceImpl implements ExpenseService {
      * */
     private ExpenseDTO mapToExpenseDTO(ExpenseEntity expenseEntity) {
        return modelMapper.map(expenseEntity,ExpenseDTO.class );
+    }
+
+
+    /**
+     * It will fetch single expense entity  from database
+     * @param expenseId
+     * @return expenseEntity
+     * */
+    private ExpenseEntity getExpenseEntity(String expenseId) {
+        return expenseRepository.findByExpenseId( expenseId ).
+                orElseThrow( () -> new ResourceNotFoundException( "Expense details not found for expense id " + expenseId ) );
     }
 }
