@@ -9,9 +9,11 @@ import com.expens.manager.service.ExpenseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -42,6 +44,18 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     /**
+     * It will save expense details to database
+     * @return list of expense
+     * */
+    public ExpenseDTO saveExpenseDetails(ExpenseDTO expenseDTO){
+        ExpenseEntity newExpenseEntity = this.mapToExpenseEntity( expenseDTO );
+        newExpenseEntity.setExpenseId( UUID.randomUUID().toString() );
+        newExpenseEntity=expenseRepository.save( newExpenseEntity );
+        log.info( "expense details saved successfully for expenseId {}",newExpenseEntity.getExpenseId() );
+        return mapToExpenseDTO( newExpenseEntity );
+    }
+
+    /**
      * It will fetch single expense details  from database
      * @param expenseId
      * @return expenseDTO
@@ -62,6 +76,15 @@ public class ExpenseServiceImpl implements ExpenseService {
         ExpenseEntity expenseEntity = this.getExpenseEntity( expenseId );
         expenseRepository.delete( expenseEntity );
         log.info( "expense details deleted successfully for expenseId {}",expenseId );
+    }
+
+    /**
+     * Mapper method for converting from dto object to entity object
+     * @param expenseDTO
+     * @return expenseEntity
+     * */
+    private ExpenseEntity mapToExpenseEntity(ExpenseDTO expenseDTO) {
+       return modelMapper.map(expenseDTO,ExpenseEntity.class );
     }
 
     /**
