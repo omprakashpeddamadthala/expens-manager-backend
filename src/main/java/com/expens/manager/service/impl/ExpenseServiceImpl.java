@@ -96,7 +96,6 @@ public class ExpenseServiceImpl implements ExpenseService {
        return modelMapper.map(expenseEntity,ExpenseDTO.class );
     }
 
-
     /**
      * It will fetch single expense entity  from database
      * @param expenseId
