@@ -54,6 +54,22 @@ public class ExpenseServiceImpl implements ExpenseService {
         log.info( "expense details saved successfully for expenseId {}",newExpenseEntity.getExpenseId() );
         return mapToExpenseDTO( newExpenseEntity );
     }
+    /**
+     * It will update expense details to database
+     * @return list of expense dto
+     * */
+    @Override
+    public ExpenseDTO updateExpenseDetails(ExpenseDTO expenseDTO, String expenseId) {
+        ExpenseEntity existingExpense = this.getExpenseEntity( expenseId );
+        ExpenseEntity updateExpenseEntity = mapToExpenseEntity( expenseDTO );
+        updateExpenseEntity.setId( existingExpense.getId());
+        updateExpenseEntity.setExpenseId( existingExpense.getExpenseId());
+        updateExpenseEntity.setCreatedAt( existingExpense.getCreatedAt() );
+        updateExpenseEntity.setUpdatedAt( existingExpense.getUpdatedAt() );
+        ExpenseEntity savedExpenseEntity = expenseRepository.save( updateExpenseEntity );
+        log.info( "Printing the updated expense entity details {} ",updateExpenseEntity );
+        return mapToExpenseDTO( savedExpenseEntity );
+    }
 
     /**
      * It will fetch single expense details  from database

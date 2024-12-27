@@ -45,7 +45,7 @@ public class ExpenseController {
     /**
      * It will save expense details to database
      * @param expenseRequest
-     * @return expense details
+     * @return expense response
      * */
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/expenses")
@@ -54,6 +54,19 @@ public class ExpenseController {
         ExpenseDTO expenseDTO =expenseService.saveExpenseDetails(mapToExpenseDto(expenseRequest) );
         log.info( "Printing data  expenseDTO : {}", expenseDTO );
         return  mapToExpenseResponse( expenseDTO );
+    }
+
+    /**
+     * It will update  expense details to database
+     * @param updateRequest
+     * @return expense response
+     * */
+    @PutMapping(("/expenses/{expenseId}"))
+    public ExpenseResponse updateExpenseDetails(@RequestBody ExpenseRequest updateRequest ,@PathVariable String expenseId ){
+        log.info("API PUT /expenses called successfully {} ",updateRequest);
+        ExpenseDTO updateExpenseDTO = mapToExpenseDto( updateRequest );
+        updateExpenseDTO =expenseService.updateExpenseDetails( updateExpenseDTO , expenseId);
+        return mapToExpenseResponse( updateExpenseDTO );
     }
 
     /**
