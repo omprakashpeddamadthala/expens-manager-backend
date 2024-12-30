@@ -105,3 +105,8 @@ INSERT INTO tbl_expense (expense_id,
 VALUES (UUID(), 'Year-end Party', 'Celebrating end of year with team dinner', 'Food', '2024-09-05', '300.00', '2024-09-05',
         '2024-09-05');
 
+
+INSERT INTO tbl_profile (profile_id, name, email, password)
+VALUES
+    (UUID(), 'Om Prakash Peddamadthala', 'omprakash@example.com', '$2a$10$I0s9THq6G5t2SqamCbiXI.EmwGQ5j6zpmgF1LZXp/Xf8Kd/3UWeU2');
+
