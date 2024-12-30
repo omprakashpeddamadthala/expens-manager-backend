@@ -9,6 +9,7 @@ import com.expens.manager.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -24,6 +25,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     private final ModelMapper modelMapper;
     private final ProfileRepository profileRepository;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * This method is used to create a new profile
@@ -35,6 +37,7 @@ public class ProfileServiceImpl implements ProfileService {
         if (profileRepository.existsByEmail(profileDTO.getEmail())) {
             throw new ItemExistsException("Profile already exists "+profileDTO.getEmail());
         }
+        profileDTO.setPassword( passwordEncoder.encode(profileDTO.getPassword()));
         ProfileEntity profileEntity =mapToProfileEntity(profileDTO);
         profileEntity.setProfileId( UUID.randomUUID().toString() );
         ProfileEntity savedProfileEntity =profileRepository.save( profileEntity );
