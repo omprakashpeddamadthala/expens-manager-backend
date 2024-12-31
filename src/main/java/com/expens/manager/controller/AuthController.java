@@ -5,7 +5,9 @@ import com.expens.manager.io.AuthRequest;
 import com.expens.manager.io.AuthResponse;
 import com.expens.manager.io.ProfileRequest;
 import com.expens.manager.io.ProfileResponse;
+import com.expens.manager.service.CustomUserDetailsService;
 import com.expens.manager.service.ProfileService;
+import com.expens.manager.utils.JwtTokenUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -34,6 +37,8 @@ public class AuthController {
     private final ModelMapper modelMapper;
     private final ProfileService profileService;
     private final AuthenticationManager authenticationManager;
+    private final CustomUserDetailsService userDetailsService;
+    private final JwtTokenUtil jwtTokenUtil;
 
     /**
      * This method is responsible for creating a new profile
@@ -58,7 +63,9 @@ public class AuthController {
     public AuthResponse authenticateProfile(@RequestBody AuthRequest authRequest){
         log.info( "API /login called authRequestauthRequest {}",authRequest );
         authenticationManager.authenticate( new UsernamePasswordAuthenticationToken( authRequest.getEmail(),authRequest.getPassword() ) );
-        return new AuthResponse( UUID.randomUUID().toString(), authRequest.getEmail() );
+        final UserDetails userDetails =userDetailsService.loadUserByUsername(authRequest.getEmail()  );
+        final String token = jwtTokenUtil.generateToken( userDetails );
+        return new AuthResponse( token, authRequest.getEmail() );
     }
 
 

@@ -23,3 +23,6 @@ server:
   servlet:
     context-path: /api/v1
   port: 9090
+
+jwt:
+  secret: expensmanager
