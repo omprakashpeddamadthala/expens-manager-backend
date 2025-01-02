@@ -1,6 +1,5 @@
 package com.expens.manager.utils;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 
 @Component
@@ -28,28 +26,8 @@ public class JwtTokenUtil {
                 .setClaims( claims )
                 .setSubject( userDetails.getUsername() )
                 .setIssuedAt( new Date(System.currentTimeMillis()))
-                .setExpiration( new Date(System.currentTimeMillis() +JWT_TOKEN_VALIDITY * 1000))
+                .setExpiration( new Date(System.currentTimeMillis() +JWT_TOKEN_VALIDITY ))
                 .signWith( SignatureAlgorithm.HS256,secret )
                 .compact();
     }
-
-    public String  getUsernameFromToken(String jwtToken) {
-       return getClaimFromToken(jwtToken,Claims::getSubject);
-    }
-
-    private <T> T getClaimFromToken(String jwtToken, Function<Claims,T> claimResolver){
-        final  Claims claims=   Jwts.parser().setSigningKey( secret ).parseClaimsJws( jwtToken ).getBody();
-        return  claimResolver.apply( claims );
-    }
-
-    public boolean validateToken(String jwtToken,UserDetails userDetails){
-      final  String email = getUsernameFromToken( jwtToken );
-      return email.equals( userDetails.getUsername())&& !isTokenExpired(jwtToken);
-    }
-
-    private boolean isTokenExpired(String jwtToken) {
-        final  Date expiration =getClaimFromToken( jwtToken,Claims::getExpiration );
-        return expiration.before( new Date() );
-    }
-
 }
