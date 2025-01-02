@@ -14,8 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -62,28 +60,12 @@ public class AuthController {
      * @return AuthResponse
      * */
     @PostMapping("/login")
-    public AuthResponse authenticateProfile(@RequestBody AuthRequest authRequest) throws Exception {
-        log.info( "API /login called authRequest {}",authRequest );
-        authenticate( authRequest );
+    public AuthResponse authenticateProfile(@RequestBody AuthRequest authRequest){
+        log.info( "API /login called authRequestauthRequest {}",authRequest );
+        authenticationManager.authenticate( new UsernamePasswordAuthenticationToken( authRequest.getEmail(),authRequest.getPassword() ) );
         final UserDetails userDetails =userDetailsService.loadUserByUsername(authRequest.getEmail()  );
         final String token = jwtTokenUtil.generateToken( userDetails );
         return new AuthResponse( token, authRequest.getEmail() );
-    }
-
-    /**
-     * This method is used to authenticate the user
-     * @param authRequest
-     * @throws Exception
-     */
-    private void authenticate(AuthRequest authRequest) throws Exception {
-        try {
-            authenticationManager.authenticate( new UsernamePasswordAuthenticationToken( authRequest.getEmail(), authRequest.getPassword() ) );
-        }catch (DisabledException exception){
-             throw  new Exception("Profile Disabled");
-        }catch (BadCredentialsException exception){
-            throw  new Exception("Bad Credentials ");
-        }
-        authenticationManager.authenticate( new UsernamePasswordAuthenticationToken( authRequest.getEmail(), authRequest.getPassword() ) );
     }
 
 
