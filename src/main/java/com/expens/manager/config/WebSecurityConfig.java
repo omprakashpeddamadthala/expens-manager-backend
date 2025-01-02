@@ -7,10 +7,12 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * This class is used to configure the security for the application
@@ -34,8 +36,15 @@ public class WebSecurityConfig {
        return httpSecurity.csrf(csrfConfigurer -> csrfConfigurer.disable())
                 .authorizeHttpRequests(matcherRegistry -> matcherRegistry
                         .requestMatchers("/login","/register").permitAll().anyRequest().authenticated())
+                .sessionManagement(session -> session.sessionCreationPolicy( SessionCreationPolicy.STATELESS ))
+                .addFilterBefore(  authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .httpBasic( Customizer.withDefaults())
                 .build();
+    }
+
+    @Bean
+    public JwtRequestFilter  authenticationJwtTokenFilter(){
+        return new JwtRequestFilter();
     }
 
     /**
