@@ -1,5 +1,6 @@
 package com.expens.manager.config;
 
+import com.expens.manager.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,8 +24,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class WebSecurityConfig {
 
-    private  UserDetailsService userDetailsService;
-    public WebSecurityConfig(UserDetailsService userDetailsService) {
+    private CustomUserDetailsService userDetailsService;
+    public WebSecurityConfig(CustomUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
