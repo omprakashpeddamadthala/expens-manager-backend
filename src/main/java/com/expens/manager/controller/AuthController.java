@@ -7,7 +7,9 @@ import com.expens.manager.io.ProfileRequest;
 import com.expens.manager.io.ProfileResponse;
 import com.expens.manager.service.CustomUserDetailsService;
 import com.expens.manager.service.ProfileService;
+import com.expens.manager.service.impl.TokenBlackListService;
 import com.expens.manager.utils.JwtTokenUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -39,6 +42,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
+    private final TokenBlackListService tokenBlackListService;
 
     /**
      * This method is responsible for creating a new profile
@@ -66,6 +70,34 @@ public class AuthController {
         final UserDetails userDetails =userDetailsService.loadUserByUsername(authRequest.getEmail()  );
         final String token = jwtTokenUtil.generateToken( userDetails );
         return new AuthResponse( token, authRequest.getEmail() );
+    }
+
+
+    /**
+     * This method is used to logout the user
+     * @param httpServletRequest
+     * @return void
+     */
+    @PostMapping("/signout")
+    public void logout(HttpServletRequest httpServletRequest){
+        log.info( "API /logout called ");
+        String token = extractTokenFromRequest(httpServletRequest);
+        if(!StringUtils.isEmpty( token )) {
+            tokenBlackListService.addTokenToBlackList( token );
+        }
+    }
+
+    /**
+     * This method is used to extract the token from the httpServletRequest
+     * @param httpServletRequest
+     * @return null
+     */
+    private String extractTokenFromRequest(HttpServletRequest httpServletRequest) {
+        String bearerToken = httpServletRequest.getHeader( "Authorization");
+        if(bearerToken!=null && bearerToken.startsWith( "Bearer " )) {
+            return bearerToken.substring( 7 );
+        }
+        return null;
     }
 
     /**
