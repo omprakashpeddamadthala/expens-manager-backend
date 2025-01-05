@@ -32,7 +32,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String jwtToken = null;
         String email = null;
 
-        if (request.getServletPath().equals("/login")) {
+        if (request.getServletPath().equals("/login") || request.getServletPath().equals("/register") ){
             filterChain.doFilter(request, response);
             return;
         }
@@ -57,6 +57,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 }
             }
             filterChain.doFilter( request,response );
+        }else {
+            throw new  RuntimeException("Jwt token does not begin with Bearer String");
         }
     }
 }
