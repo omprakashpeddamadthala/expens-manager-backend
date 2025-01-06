@@ -3,6 +3,7 @@ package com.expens.manager.controller;
 import com.expens.manager.dto.ExpenseDTO;
 import com.expens.manager.io.ExpenseRequest;
 import com.expens.manager.io.ExpenseResponse;
+import com.expens.manager.service.AuthService;
 import com.expens.manager.service.ExpenseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

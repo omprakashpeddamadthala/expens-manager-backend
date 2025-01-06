@@ -78,6 +78,7 @@ public class AuthController {
      * @param httpServletRequest
      * @return void
      */
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/signout")
     public void logout(HttpServletRequest httpServletRequest){
         log.info( "API /logout called ");
