@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serializable;
@@ -39,6 +41,9 @@ public class ExpenseEntity implements Serializable {
     @UpdateTimestamp
     private Timestamp updatedAt;
 
-
+    @ManyToOne(fetch = FetchType.LAZY,optional = false)
+    @JoinColumn(name = "owner_id",nullable = false)
+    @OnDelete( action = OnDeleteAction.CASCADE)
+    private ProfileEntity owner;
 
 }
